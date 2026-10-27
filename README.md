@@ -10,6 +10,16 @@ Esta versão mantém o caixa completo do [Projeto-Pesqueiro de IgorCouto7](https
 
 Os cards usam o nome da pessoa ou do grupo. Clique em **Nova comanda** para abrir um atendimento só pelo nome, sem numerar mesas. Os preços são definidos na aba **Produtos e estoque**, não durante o lançamento.
 
+## Agilidade no atendimento
+
+- **Busca por nome:** filtra os cards, inclusive quando você digita sem acentos.
+- **Produtos favoritos:** atalhos para selecionar um produto e informar a quantidade. Use “Escolher favoritos” para marcar os atalhos; a preferência fica salva neste navegador.
+- **Consumo agrupado:** produtos iguais com o mesmo preço aparecem somados. Preços históricos diferentes continuam em linhas separadas. Os subtotais são somados como foram registrados, inclusive em vendas por peso.
+- **Lançamentos individuais:** continuam disponíveis para conferir ou cancelar apenas um lançamento. Cancelamentos também permanecem no histórico.
+- **Conferir / imprimir conta:** abre uma conta limpa com quantidades, preços e total, com opção de imprimir ou salvar PDF pelo navegador. Conferir ou imprimir não registra pagamento.
+
+![Conferência com dados fictícios](previa-conferencia.png)
+
 ![Prévia com dados fictícios](previa-cards.png)
 
 ## Instalar e abrir no Windows
@@ -30,7 +40,7 @@ Consulte o [guia completo do caixa](GUIA-DO-CAIXA.md).
 ```sh
 python -m pip install -r requirements-dev.txt
 python -m pytest
-node --test tests/cards.test.cjs
+node --test tests/cards.test.cjs tests/melhorias.test.cjs
 python iniciar.py
 ```
 

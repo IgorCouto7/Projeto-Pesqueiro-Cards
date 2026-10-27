@@ -179,6 +179,12 @@ def home():
 def classic():
     return FileResponse(ROOT / 'caixa-classico.html', headers={'Cache-Control': 'no-store'})
 
+
+@app.get('/melhorias.js', include_in_schema=False)
+def improvements():
+    return FileResponse(ROOT / 'melhorias.js', media_type='application/javascript',
+                        headers={'Cache-Control': 'no-store'})
+
 @app.get('/api/sessao')
 def session():
     return JSONResponse({'token': TOKEN}, headers={'Cache-Control': 'no-store'})

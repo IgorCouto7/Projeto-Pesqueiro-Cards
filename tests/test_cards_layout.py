@@ -38,3 +38,11 @@ def test_cards_centrais_abrem_consumo_com_preco_do_catalogo():
     assert 'id="saleProduct"' in modal
     assert 'name="preco"' not in modal
     assert 'id="backToCards"' in modal
+
+
+def test_impressao_mostra_so_a_conferencia_aberta():
+    script = (ROOT / 'melhorias.js').read_text(encoding='utf-8')
+    assert "window.print()" in script
+    assert 'body:has(#receiptDialog[open]) > :not(#receiptDialog)' in script
+    assert '#receiptDialog .no-print{display:none!important}' in script
+    assert 'break-inside:avoid' in script

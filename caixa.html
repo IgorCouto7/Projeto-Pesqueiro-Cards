@@ -116,4 +116,4 @@ for(const id of ['orderDialog','newOrderDialog'])$(id).addEventListener('cancel'
 /* /CARDS_DIALOG */
 async function refreshAll(){await Promise.all([refreshProducts(),refreshOrders(),refreshMoves(),refreshCash()])}
 (async()=>{const d=new Date();$('today').textContent=d.toLocaleDateString('pt-BR');$('cashDate').value=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');token=(await api('sessao')).token;await refreshAll()})().catch(e=>notify('Não foi possível carregar o caixa: '+e.message));
-</script></body></html>
+</script><script src="/melhorias.js"></script></body></html>
