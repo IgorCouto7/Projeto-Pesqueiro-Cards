@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comandas · Pesqueiro</title>
+<style>
+:root{--ink:#183b32;--muted:#69756e;--paper:#f6f5ef;--green:#215b47;--line:#dedfd4;--orange:#d56335}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif}button,input{font:inherit}button,a,input{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible{outline:3px solid #d56335;outline-offset:4px}header{background:var(--ink);color:#fff;padding:23px max(24px,calc((100vw - 1160px)/2));display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{font-size:20px;font-weight:700;letter-spacing:-.5px}.brand small{display:block;color:#bad2c4;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:5px}header a{color:#e3eadd;font-size:13px;text-underline-offset:5px}main{max-width:1208px;margin:auto;padding:48px 24px}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:var(--muted)}.heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:10px 0 30px}h1{font-size:clamp(30px,4vw,44px);letter-spacing:-1.7px;margin:0 0 10px;line-height:1.1}.subtitle{color:var(--muted);margin:0;line-height:1.6}.primary,.secondary{border:0;border-radius:10px;padding:14px 20px;font-weight:600}.primary{background:var(--green);color:#fff}.secondary{background:#eaede5;color:var(--ink)}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);background:#eeefe6;border-radius:14px;margin-bottom:30px}.stat{padding:22px 26px}.stat+.stat{border-left:1px solid var(--line)}.stat span{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.stat strong{font-size:26px;font-weight:600;letter-spacing:-.7px}.toolbar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin-bottom:22px}.tabs{display:flex;background:#e9ece3;border-radius:10px;padding:4px}.tabs button{border:0;background:transparent;padding:9px 18px;border-radius:7px;color:var(--muted)}.tabs button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 4px #183b3212;font-weight:600}input{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:13px;max-width:100%}.toolbar input{width:290px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:18px}.guest{background:#fff;border:1px solid var(--line);border-radius:15px;padding:23px;text-align:left;color:var(--ink);min-height:218px;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column}.guest:hover{transform:translateY(-3px);box-shadow:0 8px 24px #183b3212;border-color:#9bb7a5}.card-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:24px}.avatar{display:grid;place-items:center;width:39px;height:39px;background:#eff2e9;border-radius:50%;font-size:13px;font-weight:700}.badge{font-size:10px;letter-spacing:.7px;text-transform:uppercase;background:#edf5ee;color:#32634c;padding:6px 9px;border-radius:20px}.badge.paid{background:#f0f0ea;color:#73786b}.guest h2{font-size:20px;letter-spacing:-.5px;margin:0 0 6px;overflow-wrap:anywhere}.meta{font-size:12px;color:var(--muted)}.card-bottom{display:flex;align-items:end;justify-content:space-between;border-top:1px solid #f0f0e9;margin-top:21px;padding-top:15px;gap:10px}.card-bottom strong{font-size:23px;font-weight:600;letter-spacing:-.7px}.arrow{font-size:22px;color:#7d9583}.empty{grid-column:1/-1;text-align:center;padding:60px 20px;border:1px dashed #cbd2c4;border-radius:15px;color:var(--muted)}.empty strong{display:block;color:var(--ink);font-size:22px;margin-bottom:10px}.hint{margin-top:26px;font-size:12px;color:var(--muted);text-align:center}.message{margin:0 0 20px;color:#a23825;background:#fae7dd;padding:14px;border-radius:10px}.message:empty{display:none}.refresh{border:0;background:transparent;color:var(--green);font-size:13px;text-decoration:underline;text-underline-offset:4px}dialog{border:1px solid var(--line);border-radius:20px;padding:30px;color:var(--ink);width:min(760px,calc(100% - 28px));max-height:90vh;box-shadow:0 25px 90px #102c3240}dialog::backdrop{background:#102a2390;backdrop-filter:blur(3px)}#nova{width:min(460px,calc(100% - 28px))}.dialog-top{display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:22px}.dialog-top h2{margin:0;font-size:27px;overflow-wrap:anywhere}.close{border:0;background:#eff1e9;border-radius:50%;width:34px;height:34px;color:var(--ink);font-size:22px;flex-shrink:0}.field{display:block;font-size:13px;font-weight:600;margin:18px 0 7px}form input{width:100%}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}.total{background:#eff2e9;border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}.total strong{font-size:30px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th{text-align:left;color:var(--muted);font-size:11px;letter-spacing:.7px;text-transform:uppercase;font-weight:600}th,td{padding:13px 8px;border-bottom:1px solid #e9ece3}td:first-child{overflow-wrap:anywhere}td:last-child,th:last-child{text-align:right}.item-form{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end;padding:12px 0}.item-form label{font-size:12px;font-weight:600;display:grid;gap:7px;min-width:0}.item-form input{min-width:0}.danger{background:var(--orange);color:white}.footnote{font-size:12px;color:var(--muted);line-height:1.6;margin:0}#pagamento{margin-left:auto}.detail-footer{display:flex;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap}[hidden]{display:none!important}@media(max-width:650px){header{padding:20px}header a{font-size:11px}main{padding:30px 18px}.heading{align-items:start;flex-direction:column;gap:18px}.heading .primary{width:100%}.stat{padding:17px 12px}.stat strong{font-size:21px}.stat span{font-size:11px}.toolbar{align-items:stretch;flex-direction:column}.toolbar input{width:100%}.tabs button{flex:1;padding:9px 12px}.grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}dialog{padding:20px}.item-form{grid-template-columns:1fr 1fr}.item-form label:first-child{grid-column:1/-1}.item-form button{grid-column:1/-1}.total strong{font-size:24px}.detail-footer button{width:100%}#pagamento{margin-left:0}.hint{line-height:1.6}}
+</style>
+</head>
+<body>
+<header><div class="brand">◉ &nbsp;Pesqueiro<small>Boa pesca. Boa companhia.</small></div><a href="/classico" id="classico">Acessar versão anterior ↗</a></header>
+<main>
+<div class="eyebrow">Atendimento do pesqueiro</div>
+<div class="heading"><div><h1>Cada grupo, uma comanda.</h1><p class="subtitle">Quem chegou por aí? Abra pelo nome e acompanhe por aqui.</p></div><button class="primary" id="abrirNova">＋ Nova comanda</button></div>
+<section class="stats" aria-label="Resumo das comandas"><div class="stat"><span>Em atendimento</span><strong id="qtdAbertas">—</strong></div><div class="stat"><span>Consumo em aberto</span><strong id="totalAberto">—</strong></div><div class="stat"><span>Contas pagas</span><strong id="qtdPagas">—</strong></div></section>
+<div class="toolbar"><div class="tabs" aria-label="Filtrar comandas"><button data-filter="ABERTA" aria-pressed="true">Em atendimento</button><button data-filter="PAGA" aria-pressed="false">Pagas</button></div><input id="busca" type="search" placeholder="Buscar pelo nome…" aria-label="Buscar pelo nome"></div>
+<div id="erro" class="message" role="alert"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span class="eyebrow" id="resultado">Carregando comandas…</span><button class="refresh" id="atualizar">Atualizar</button></div>
+<section class="grid" id="cards" aria-label="Comandas por nome" aria-live="polite"></section>
+<p class="hint">Sem números de mesa. Cada card acompanha uma pessoa ou um grupo.</p>
+</main>
+<dialog id="nova" aria-labelledby="tituloNova"><div class="dialog-top"><div><div class="eyebrow" style="margin-bottom:10px">Um novo atendimento</div><h2 id="tituloNova">Quem acabou de chegar?</h2></div><button class="close" aria-label="Fechar" data-close="nova">×</button></div><p class="subtitle">Use o nome da pessoa ou do grupo para reconhecer a comanda.</p><form id="formNova"><label class="field" for="nome">Nome da pessoa ou grupo</label><input id="nome" name="nome" placeholder="Ex.: João e família" required maxlength="120" autocomplete="off"><div id="erroNova" class="message" role="alert" style="margin-top:15px"></div><div class="actions"><button type="button" class="secondary" data-close="nova">Cancelar</button><button class="primary" id="criar">Abrir comanda</button></div></form></dialog>
+<dialog id="detalhe" aria-labelledby="nomeDetalhe"><div class="dialog-top"><div><div class="eyebrow" id="referencia" style="margin-bottom:10px"></div><h2 id="nomeDetalhe"></h2></div><button class="close" aria-label="Voltar às comandas" data-close="detalhe">×</button></div><div id="erroDetalhe" class="message" role="alert"></div><div class="total"><span>Total da comanda</span><strong id="valorDetalhe"></strong></div><div class="table-wrap"><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Preço un.</th><th>Subtotal</th></tr></thead><tbody id="itens"></tbody></table></div><form id="formItem" class="item-form"><label>Produto<input id="produto" required maxlength="150" placeholder="Ex.: Cerveja"></label><label>Quantidade<input id="quantidade" type="number" min="1" step="1" value="1" required></label><label>Preço unitário<input id="preco" type="number" min="0" step="0.01" placeholder="0,00" required></label><button id="adicionar" class="primary">＋ Adicionar</button></form><div class="detail-footer"><button class="secondary" data-close="detalhe">← Voltar às comandas</button><button class="primary danger" id="pagamento">Finalizar e pagar</button></div><p class="footnote" style="margin-top:18px">Produtos iguais com o mesmo preço aparecem juntos. Cada lançamento fica preservado.</p></dialog>
+<script>
+const API = location.protocol === 'file:' ? 'http://127.0.0.1:8000' : location.origin;
+const $ = id => document.getElementById(id);
+const moeda = valor => valor.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+let comandas = [], filtro = 'ABERTA', selecionada = null, detalhes = null;
+let carregou = false, ocupado = false, leitura = 0;
+if (location.protocol === 'file:') $('classico').href = 'index.html';
+
+async function requisitar(caminho, metodo = 'GET', corpo) {
+    const resposta = await fetch(API + caminho, {
+        method: metodo, headers: {'Content-Type':'application/json'},
+        ...(corpo === undefined ? {} : {body:JSON.stringify(corpo)})
+    });
+    if (!resposta.ok) {
+        const erro = await resposta.json().catch(() => ({}));
+        throw new Error(typeof erro.detail === 'string' ? erro.detail : 'Não foi possível concluir. Confira os dados e tente novamente.');
+    }
+    return resposta.json();
+}
+function mensagem(id, erro) { $(id).textContent = erro.message || 'Não foi possível conectar. Verifique se o sistema está ligado e tente atualizar.'; }
+function elemento(tag, texto, classe) {
+    const el = document.createElement(tag);
+    if (texto !== undefined) el.textContent = texto;
+    if (classe) el.className = classe;
+    return el;
+}
+function renderizar() {
+    const abertas = comandas.filter(c => c.status === 'ABERTA');
+    $('qtdAbertas').textContent = abertas.length;
+    $('qtdPagas').textContent = comandas.filter(c => c.status === 'PAGA').length;
+    $('totalAberto').textContent = moeda(abertas.reduce((s,c) => s+c.valor_total,0));
+    const termo = $('busca').value.trim().toLocaleLowerCase('pt-BR');
+    const visiveis = comandas.filter(c => c.status === filtro && c.nome_cliente.toLocaleLowerCase('pt-BR').includes(termo));
+    $('resultado').textContent = `${visiveis.length} comanda${visiveis.length === 1 ? '' : 's'} ${filtro === 'ABERTA' ? 'em atendimento' : visiveis.length === 1 ? 'paga' : 'pagas'}`;
+    $('cards').replaceChildren();
+    if (!visiveis.length) {
+        const vazio = elemento('div', undefined, 'empty');
+        vazio.append(elemento('strong', termo ? 'Nenhuma comanda com esse nome.' : filtro === 'ABERTA' ? 'A próxima boa história começa aqui.' : 'Nenhuma conta paga por enquanto.'), elemento('span', termo ? 'Experimente buscar por outra parte do nome.' : filtro === 'ABERTA' ? 'Clique em “Nova comanda” quando o pessoal chegar.' : 'Ao finalizar uma comanda, ela aparece nesta aba.'));
+        $('cards').append(vazio);
+    }
+    for (const comanda of visiveis) {
+        const card = elemento('button', undefined, 'guest');
+        card.type = 'button';
+        card.setAttribute('aria-label', `Abrir comanda de ${comanda.nome_cliente}, referência ${comanda.id}`);
+        const topo = elemento('div', undefined, 'card-top');
+        const iniciais = comanda.nome_cliente.split(/\s+/).slice(0,2).map(p=>Array.from(p)[0] || '').join('').toLocaleUpperCase('pt-BR');
+        topo.append(elemento('span', iniciais, 'avatar'), elemento('span', comanda.status === 'ABERTA' ? 'Em atendimento' : 'Paga', 'badge' + (comanda.status === 'PAGA' ? ' paid' : '')));
+        const rodape = elemento('div', undefined, 'card-bottom');
+        rodape.append(elemento('strong', moeda(comanda.valor_total)), elemento('span', '↗', 'arrow'));
+        // SQLite grava o horário do servidor em UTC sem sufixo de fuso.
+        const horario = /(?:Z|[+-]\d{2}:\d{2})$/i.test(comanda.criado_em) ? comanda.criado_em : comanda.criado_em + 'Z';
+        const data = new Date(horario).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        card.append(topo,elemento('h2',comanda.nome_cliente),elemento('span',`${data} · Comanda #${comanda.id}`,'meta'),rodape);
+        card.addEventListener('click',()=>abrirDetalhe(comanda));
+        $('cards').append(card);
+    }
+}
+async function atualizar() {
+    $('atualizar').disabled = true;
+    try {
+        comandas = await requisitar('/comandas');
+        carregou = true;
+        $('erro').textContent = '';
+        renderizar();
+    } catch (erro) {
+        mensagem('erro',erro);
+        if (!carregou) $('resultado').textContent = 'Não foi possível carregar as comandas';
+    } finally { $('atualizar').disabled = false; }
+}
+function mostrarDetalhe(data) {
+    detalhes = data;
+    $('valorDetalhe').textContent = moeda(data.valor_total);
+    $('referencia').textContent = `Comanda #${data.id} · ${data.status === 'ABERTA' ? 'Em atendimento' : 'Paga'}`;
+    $('itens').replaceChildren();
+    for (const item of data.itens_agrupados) {
+        const linha = elemento('tr');
+        for (const valor of [item.nome_produto, item.quantidade, moeda(item.preco_unitario), moeda(item.valor_total)]) linha.append(elemento('td',String(valor)));
+        $('itens').append(linha);
+    }
+    if (!data.itens_agrupados.length) {
+        const linha = elemento('tr'), celula = elemento('td','Nenhum consumo lançado ainda.');
+        celula.colSpan = 4; linha.append(celula); $('itens').append(linha);
+    }
+    $('formItem').hidden = data.status !== 'ABERTA';
+    $('pagamento').hidden = data.status !== 'ABERTA';
+}
+async function abrirDetalhe(comanda) {
+    if (ocupado) return;
+    const token = ++leitura;
+    selecionada = comanda;
+    detalhes = null;
+    $('nomeDetalhe').textContent = comanda.nome_cliente;
+    $('referencia').textContent = 'Carregando consumo…';
+    $('valorDetalhe').textContent = '—';
+    $('itens').replaceChildren();
+    $('formItem').reset();
+    $('formItem').hidden = true;
+    $('pagamento').hidden = true;
+    $('erroDetalhe').textContent = '';
+    if (!$('detalhe').open) $('detalhe').showModal();
+    try {
+        const data = await requisitar(`/comandas/${comanda.id}`);
+        if (token === leitura) mostrarDetalhe(data);
+    } catch (erro) { if (token === leitura) mensagem('erroDetalhe',erro); }
+}
+function bloquear(estado) {
+    ocupado = estado;
+    for (const id of ['adicionar','pagamento','produto','quantidade','preco']) $(id).disabled = estado;
+    document.querySelectorAll('[data-close="detalhe"]').forEach(b=>b.disabled=estado);
+}
+$('abrirNova').addEventListener('click',()=>{
+    $('formNova').reset(); $('erroNova').textContent=''; $('nova').showModal(); $('nome').focus();
+});
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));
+$('detalhe').addEventListener('cancel',e=>{if(ocupado)e.preventDefault();});
+$('detalhe').addEventListener('close',()=>{leitura++;selecionada=null;detalhes=null;});
+$('nova').addEventListener('cancel',e=>{if($('criar').disabled)e.preventDefault();});
+$('formNova').addEventListener('submit',async e=>{
+    e.preventDefault();
+    if ($('criar').disabled) return;
+    const nome = $('nome').value.trim();
+    if (!nome) { $('erroNova').textContent='Informe o nome da pessoa ou grupo.'; return; }
+    $('criar').disabled=true;
+    document.querySelectorAll('[data-close="nova"]').forEach(b=>b.disabled=true);
+    $('erroNova').textContent='';
+    try {
+        const comanda=await requisitar('/atendimentos','POST',{nome});
+        $('nova').close(); filtro='ABERTA'; $('busca').value=''; atualizarAbas();
+        await atualizar(); await abrirDetalhe(comanda);
+    } catch(erro) { mensagem('erroNova',erro); }
+    finally { $('criar').disabled=false;document.querySelectorAll('[data-close="nova"]').forEach(b=>b.disabled=false); }
+});
+$('formItem').addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(ocupado || !detalhes || detalhes.status !== 'ABERTA')return;
+    const nome_produto=$('produto').value.trim(), quantidade=Number($('quantidade').value), preco_unitario=Number($('preco').value);
+    if(!nome_produto || !Number.isInteger(quantidade) || quantidade<1 || !Number.isFinite(preco_unitario) || preco_unitario<0){$('erroDetalhe').textContent='Confira o produto, a quantidade e o preço.';return;}
+    bloquear(true); $('erroDetalhe').textContent='';
+    let gravado=false;
+    try {
+        await requisitar('/itens','POST',{comanda_id:selecionada.id,nome_produto,quantidade,preco_unitario});
+        gravado=true;
+        $('formItem').reset();
+        mostrarDetalhe(await requisitar(`/comandas/${selecionada.id}`));
+        await atualizar();
+    } catch(erro) {
+        if(gravado){detalhes=null;$('formItem').hidden=true;$('pagamento').hidden=true;mensagem('erroDetalhe',new Error('Item salvo. Volte às comandas e abra novamente para atualizar o consumo.'));await atualizar();}
+        else mensagem('erroDetalhe',erro);
+    } finally { bloquear(false); if (!$('formItem').hidden) $('produto').focus(); }
+});
+$('pagamento').addEventListener('click',async()=>{
+    if(ocupado || !detalhes || detalhes.status !== 'ABERTA')return;
+    if(!confirm(`Confirmar o pagamento de ${moeda(detalhes.valor_total)} da comanda de ${selecionada.nome_cliente}?`))return;
+    bloquear(true); $('erroDetalhe').textContent='';
+    try {mostrarDetalhe(await requisitar(`/comandas/${selecionada.id}/checkout`,'PUT'));await atualizar();}
+    catch(erro){mensagem('erroDetalhe',erro);}
+    finally{bloquear(false);}
+});
+function atualizarAbas(){document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===filtro)));}
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filtro=b.dataset.filter;atualizarAbas();renderizar();}));
+$('busca').addEventListener('input',renderizar);
+$('atualizar').addEventListener('click',atualizar);
+atualizar();
+</script>
+</body>
+</html>

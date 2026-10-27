@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesqueiro Manager Pro</title>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --dark: #343a40; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        
+        header { background: var(--dark); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1, h2 { margin: 0; }
+        
+        .container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        @media(max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        
+        button { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        button:hover { opacity: 0.9; }
+        button.success { background-color: var(--success); }
+
+        .painel-comanda { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 4px; text-align: center; display: none; }
+        .valor-gigante { font-size: 3em; font-weight: bold; color: var(--dark); display: block; margin: 10px 0; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        thead { background-color: #f1f1f1; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎣 Pesqueiro Manager</h1>
+        <span>Sistema v1.0</span>
+    </header>
+
+    <div class="container">
+        <div>
+            <div class="card">
+                <h2>👤 Novo Cliente</h2>
+                <br>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="nomeCli">
+                </div>
+                <div class="form-group">
+                    <label>CPF</label>
+                    <input type="text" id="cpfCli">
+                </div>
+                <button onclick="cadastrarCliente()">Cadastrar</button>
+            </div>
+
+            <div class="card">
+                <h2>📝 Abrir Comanda</h2>
+                <br>
+                <div class="form-group">
+                    <label>Selecione o Cliente</label>
+                    <select id="listaClientes">
+                        <option>Carregando...</option>
+                    </select>
+                </div>
+                <button class="success" onclick="abrirComanda()">Abrir Comanda</button>
+            </div>
+        </div>
+
+        <div>
+            <div id="painelAtivo" class="card painel-comanda">
+                <h3>COMANDA <span id="lblComandaID">#0</span></h3>
+                <span class="valor-gigante" id="lblTotal">R$ 0,00</span>
+                <p>Status: <strong id="lblStatus" style="color:green">ABERTA</strong></p>
+            </div>
+
+            <div class="card">
+                <h2>🍺 Lançar Consumo</h2>
+                <p style="font-size: 0.9em; color: #666;">Digite o ID da comanda ou abra uma nova ao lado.</p>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="number" id="idComandaInput" placeholder="ID Comanda" style="width: 100px;">
+                    <button onclick="buscarComanda()" style="width: auto; background: #6c757d;">🔍 Buscar</button>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="produtoNome" placeholder="Produto (Ex: Isca, Cerveja, Porção)">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1">
+                        <input type="number" id="qtdProd" placeholder="Qtd" value="1">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <input type="number" id="precoProd" placeholder="Preço R$">
+                    </div>
+                </div>
+                <button onclick="lancarItem()" style="background-color: #e67e22;">Adicionar Item +</button>
+            </div>
+            
+            <button onclick="fecharComanda()" id="btnCheckout" style="background-color: #e74c3c; margin-top: 15px; display: none;">
+                FINALIZAR E PAGAR
+            </button>
+            
+            <button onclick="deletarComanda()" id="btnDelete" style="background-color: #8c0000; margin-top: 5px; display: none;">
+                EXCLUIR REGISTRO (Conta Paga)
+            </button>
+
+        </div>
+    </div>
+    
+    <div class="card" style="margin-top: 20px;">
+        <h2>Detalhe dos Pedidos</h2>
+        <table>
+            <thead>
+                <tr><th>Produto</th><th>Qtd</th><th>Preço Un.</th><th>Total Item</th></tr>
+            </thead>
+            <tbody id="listaPedidosDetalhe">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:8000";
+
+        // Inicialização
+        listarClientes();
+
+        async function listarClientes() {
+            const res = await fetch(API + "/clientes");
+            const dados = await res.json();
+            const select = document.getElementById("listaClientes");
+            select.innerHTML = "";
+            dados.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nome} (CPF: ${c.cpf})</option>`;
+            });
+        }
+
+        async function cadastrarCliente() {
+            const nome = document.getElementById("nomeCli").value;
+            const cpf = document.getElementById("cpfCli").value;
+            
+            if(!nome || !cpf) return alert("Preencha tudo!");
+
+            const res = await fetch(API + "/clientes", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ nome, cpf, email: "", telefone: "" })
+            });
+
+            if(res.ok) {
+                alert("Cliente Salvo!");
+                document.getElementById("nomeCli").value = "";
+                document.getElementById("cpfCli").value = "";
+                listarClientes();
+            } else {
+                alert("Erro! CPF duplicado?");
+            }
+        }
+
+        async function abrirComanda() {
+            const clienteId = document.getElementById("listaClientes").value;
+            const res = await fetch(API + "/comandas", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ cliente_id: clienteId })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                alert("Comanda Aberta: #" + data.id);
+                carregarPainel(data);
+            } else {
+                const errorData = await res.json();
+                alert(`Erro ao abrir comanda: ${errorData.detail}`);
+            }
+        }
+
+        function montarListaPedidos(itens) {
+            const lista = document.getElementById('listaPedidosDetalhe');
+            lista.innerHTML = "";
+            
+            if (!itens || itens.length === 0) {
+                lista.innerHTML = "<tr><td colspan='4'>Nenhum pedido lançado.</td></tr>";
+                return;
+            }
+
+            itens.forEach(item => {
+                const totalItem = item.valor_total;
+                lista.innerHTML += `
+                    <tr>
+                        <td>${item.nome_produto}</td>
+                        <td>${item.quantidade}</td>
+                        <td>R$ ${item.preco_unitario.toFixed(2)}</td>
+                        <td>R$ ${totalItem.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        async function buscarComanda() {
+            const id = document.getElementById("idComandaInput").value;
+            if(!id) return alert("Digite o ID");
+
+            const res = await fetch(API + "/comandas/" + id);
+            if(res.ok) {
+                const data = await res.json();
+                carregarPainel(data);
+            } else {
+                alert("Comanda não encontrada!");
+            }
+        }
+
+        function carregarPainel(data) {
+            document.getElementById("painelAtivo").style.display = "block";
+            document.getElementById("lblComandaID").innerText = "#" + data.id;
+            document.getElementById("idComandaInput").value = data.id; 
+            
+            const valor = data.valor_total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById("lblTotal").innerText = valor;
+            
+            document.getElementById("lblStatus").innerText = data.status;
+            
+            const btnCheckout = document.getElementById("btnCheckout");
+            const btnDelete = document.getElementById("btnDelete");
+            
+            // Controle de Botão de Pagamento/Status
+            if(data.status === "ABERTA") {
+                btnCheckout.style.display = 'block'; 
+                btnDelete.style.display = 'none';    
+                document.getElementById("lblStatus").style.color = 'green';
+            } else if (data.status === "PAGA") {
+                 btnCheckout.style.display = 'none';
+                 btnDelete.style.display = 'block';   // Mostra DELETAR quando PAGA
+                 document.getElementById("lblStatus").style.color = 'red';
+            } else {
+                btnCheckout.style.display = 'none';
+                btnDelete.style.display = 'none';
+            }
+
+            montarListaPedidos(data.itens_agrupados);
+        }
+
+        async function lancarItem() {
+            const comanda_id = document.getElementById("idComandaInput").value;
+            const nome_produto = document.getElementById("produtoNome").value;
+            const quantidade = parseFloat(document.getElementById("qtdProd").value);
+            const preco_unitario = parseFloat(document.getElementById("precoProd").value);
+
+            if(!comanda_id) return alert("Selecione ou Busque uma comanda antes!");
+
+            const res = await fetch(API + "/itens", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ comanda_id: parseInt(comanda_id), nome_produto, quantidade, preco_unitario })
+            });
+
+            if(res.ok) {
+                alert("Item adicionado com sucesso!");
+                buscarComanda(); 
+            } else {
+                const errorData = await res.json();
+                alert(`Erro ao lançar item: ${errorData.detail}`);
+            }
+        }
+
+        async function fecharComanda() {
+            const id = document.getElementById("idComandaInput").value;
+            if (!id) return alert("Por favor, busque a comanda antes de fechar.");
+
+            if (!confirm(`Confirma o pagamento e o fechamento da Comanda #${id}? O valor é de ${document.getElementById("lblTotal").innerText}.`)) {
+                return; 
+            }
+
+            const res = await fetch(`${API}/comandas/${id}/checkout`, {
+                method: 'PUT' 
+            });
+
+            if (res.ok) {
+                alert(`Comanda #${id} FINALIZADA e PAGA!`);
+                buscarComanda(); 
+            } else {
+                const errorData = await res.json();
+                alert(`Erro ao fechar a comanda: ${errorData.detail}`);
+            }
+        }
+        
+        async function deletarComanda() {
+            const id = document.getElementById("idComandaInput").value;
+            if (!id) return alert("Por favor, digite o ID da comanda para deletar.");
+
+            if (!confirm(`ATENÇÃO: Confirma a EXCLUSÃO PERMANENTE da Comanda #${id} e de todos os seus itens?`)) {
+                return;
+            }
+
+            const res = await fetch(`${API}/comandas/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert(`Comanda #${id} e todos os seus itens foram deletados com sucesso.`);
+                // Limpa o painel após a exclusão
+                document.getElementById("painelAtivo").style.display = 'none';
+                document.getElementById("lblTotal").innerText = 'R$ 0,00';
+                document.getElementById('listaPedidosDetalhe').innerHTML = "<tr><td colspan='4'>Nenhum registro ativo.</td></tr>";
+                document.getElementById("idComandaInput").value = '';
+            } else {
+                const errorData = await res.json();
+                alert(`Erro ao deletar: ${errorData.detail}`);
+            }
+        }
+    </script>
+</body>
+</html>

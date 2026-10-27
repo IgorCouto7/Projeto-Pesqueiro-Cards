@@ -1,0 +1,194 @@
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from pathlib import Path
+from sqlalchemy.orm import Session
+from typing import List
+
+from App.db.connection import engine, Base, get_db
+# Imports dos Modelos
+from App.models.cliente import Cliente
+from App.models.comanda import Comanda
+from App.models.item import ItemComanda
+# Imports dos Schemas
+from App.schemas.cliente import ClienteCreate, ClienteResponse
+from App.schemas.comanda import ComandaCreate, ComandaResponse
+from App.schemas.item import ItemCreate, ItemResponse
+from App.schemas.atendimento import AtendimentoCreate, ComandaCard
+
+# Cria todas as tabelas no banco de dados (SQLite)
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="Pesqueiro Manager API",
+    description="Sistema de Gestão de Clientes e Consumo",
+    version="1.0.0"
+)
+
+# Configuração CORS 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+async def root():
+    return {"status": "Online", "modulo": "Gestão de Comandas"}
+
+# --- CLIENTES ---
+@app.post("/clientes", response_model=ClienteResponse)
+def criar_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
+    db_cliente = Cliente(**cliente.model_dump())
+    db.add(db_cliente)
+    try:
+        db.commit()
+        db.refresh(db_cliente)
+        return db_cliente
+    except Exception:
+        raise HTTPException(status_code=400, detail="Erro. CPF já cadastrado?")
+
+@app.get("/clientes", response_model=List[ClienteResponse])
+def listar_clientes(db: Session = Depends(get_db)):
+    return db.query(Cliente).all()
+
+@app.get("/clientes/{cliente_id}", response_model=ClienteResponse)
+def buscar_cliente_por_id(cliente_id: int, db: Session = Depends(get_db)):
+    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+    return cliente
+    
+# --- COMANDAS ---
+@app.get("/comandas", response_model=List[ComandaCard])
+def listar_comandas(db: Session = Depends(get_db)):
+    registros = (
+        db.query(Comanda, Cliente.nome)
+        .join(Cliente, Comanda.cliente_id == Cliente.id)
+        .order_by(Comanda.id.desc()).all()
+    )
+    return [ComandaCard(
+        id=comanda.id, nome_cliente=nome, status=comanda.status,
+        valor_total=comanda.valor_total, criado_em=comanda.criado_em,
+    ) for comanda, nome in registros]
+
+
+@app.post("/atendimentos", response_model=ComandaCard)
+def abrir_atendimento(dados: AtendimentoCreate, db: Session = Depends(get_db)):
+    # Cada chegada é um atendimento independente, inclusive para homônimos.
+    # SQLite permite vários CPFs NULL; não inventamos documentos de clientes.
+    cliente = Cliente(nome=dados.nome, cpf=None, telefone="", email="")
+    try:
+        db.add(cliente)
+        db.flush()
+        comanda = Comanda(cliente_id=cliente.id)
+        db.add(comanda)
+        db.commit()
+        db.refresh(comanda)
+    except Exception:
+        db.rollback()
+        raise
+    return ComandaCard(
+        id=comanda.id, nome_cliente=cliente.nome, status=comanda.status,
+        valor_total=comanda.valor_total, criado_em=comanda.criado_em,
+    )
+
+
+@app.post("/comandas", response_model=ComandaResponse)
+def abrir_comanda(comanda: ComandaCreate, db: Session = Depends(get_db)):
+    cliente = db.query(Cliente).filter(Cliente.id == comanda.cliente_id).first()
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+    comanda_exists = db.query(Comanda).filter(Comanda.cliente_id == cliente.id).first()
+    if comanda_exists:
+        raise HTTPException(status_code=422, detail="Erro, este cliente já possui uma comanda cadastrada.")
+
+    db_comanda = Comanda(cliente_id=comanda.cliente_id)
+    db.add(db_comanda)
+    db.commit()
+    db.refresh(db_comanda)
+    return db_comanda
+
+@app.get("/comandas/{comanda_id}", response_model=ComandaResponse)
+def ver_comanda(comanda_id: int, db: Session = Depends(get_db)):
+    comanda = db.query(Comanda).filter(Comanda.id == comanda_id).first()
+    if not comanda:
+        raise HTTPException(status_code=404, detail="Comanda não encontrada")
+    return comanda
+
+# --- ITENS (CONSUMO) ---
+@app.post("/itens", response_model=ItemResponse)
+def adicionar_item(item: ItemCreate, db: Session = Depends(get_db)):
+    comanda = db.query(Comanda).filter(Comanda.id == item.comanda_id).first()
+    
+    if not comanda:
+        raise HTTPException(status_code=404, detail="Comanda não encontrada")
+    if comanda.status != "ABERTA":
+        raise HTTPException(status_code=400, detail="Comanda já está fechada!")
+    if item.preco_unitario < 0.0:
+        raise HTTPException(status_code=422, detail="Valor inválido.")
+    
+    db_item = ItemComanda(**item.model_dump())
+    db.add(db_item)
+    comanda.valor_total += (item.quantidade * item.preco_unitario)
+    
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+# --- CHECKOUT (FECHAMENTO) ---
+@app.put("/comandas/{comanda_id}/checkout", response_model=ComandaResponse)
+def finalizar_comanda(comanda_id: int, db: Session = Depends(get_db)):
+    comanda = db.query(Comanda).filter(Comanda.id == comanda_id).first()
+    
+    if not comanda:
+        raise HTTPException(status_code=404, detail="Comanda não encontrada")
+    
+    if comanda.status != "ABERTA":
+        raise HTTPException(status_code=400, detail=f"Comanda já está {comanda.status}.")
+
+    comanda.status = "PAGA"
+    db.commit()
+    db.refresh(comanda)
+    
+    return comanda
+
+# --- ADMIN: DELETAR COMANDA ---
+@app.delete("/comandas/{comanda_id}")
+def deletar_comanda(comanda_id: int, db: Session = Depends(get_db)):
+    comanda = db.query(Comanda).filter(Comanda.id == comanda_id).first()
+    
+    if not comanda:
+        raise HTTPException(status_code=404, detail="Comanda não encontrada.")
+    
+    if comanda.status != "PAGA":
+        if comanda.valor_total > 0:
+            raise HTTPException(status_code=400, detail=f"Comanda {comanda.status} com valor pendente (R$ {comanda.valor_total:.2f}). Pague antes de deletar.")
+
+    db.delete(comanda)
+    db.commit()
+    
+    return {"message": f"Comanda {comanda_id} deletada com sucesso."}
+
+# --- ADMIN: LIMPEZA DO BANCO DE DADOS ---
+@app.post("/admin/reset-db")
+def reset_database():
+    from App.db.connection import engine, Base
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    return {"message": "Database reset successful. All tables cleared."}
+
+
+@app.get("/cards", include_in_schema=False)
+def tela_cards():
+    return FileResponse(Path(__file__).resolve().parents[2] / "cards.html")
+
+
+@app.get("/classico", include_in_schema=False)
+def tela_classica():
+    return FileResponse(Path(__file__).resolve().parents[2] / "index.html")
