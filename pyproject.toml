@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "projeto-pesqueiro"
-version = "0.1.0"
+version = "0.2.0"
 description = "Sistema de gestão integrada para pesqueiro (C14)"
 authors = ["Tales Henrique <retalesHMC@proton.me>"]
 readme = "README.md"
@@ -13,17 +13,19 @@ packages = [
     { include = "App" },
 ]
 
+include = ["caixa.py", "caixa.html", "caixa-classico.html", "iniciar.py"]
+
 [tool.poetry.dependencies]
 # Compatível com Python 3.10+ (inclui 3.11 usado no CircleCI)
-python = "^3.10"
-fastapi = "^0.109.0"
-uvicorn = { extras = ["standard"], version = "^0.27.0" }
+python = "^3.12"
+fastapi = "0.141.1"
+uvicorn = "0.52.4"
 sqlalchemy = "^2.0.25"
 pydantic = { extras = ["email"], version = "^2.6.0" }
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-httpx = "^0.26.0"
+pytest = "9.1.1"
+httpx = "0.28.1"
 ruff = "^0.2.1"
 taskipy = "^1.12.2"
 
@@ -34,10 +36,11 @@ build-backend = "poetry.core.masonry.api"
 # Config do pytest (já usada pelos teus testes)
 [tool.pytest.ini_options]
 pythonpath = "."
+testpaths = ["tests"]
 addopts = "-p no:warnings"
 
 # Tarefas úteis para desenvolvimento (taskipy)
 [tool.taskipy.tasks]
-run = "uvicorn App.api.main:app --reload"
+run = "python iniciar.py"
 test = "pytest -v"
 lint = "ruff check ."

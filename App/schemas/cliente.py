@@ -11,7 +11,6 @@ class ClienteCreate(ClienteBase):
 
 class ClienteResponse(ClienteBase):
     id: int
-    cpf: str | None
 
     class Config:
         from_attributes = True

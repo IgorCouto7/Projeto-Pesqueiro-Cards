@@ -60,3 +60,9 @@ Thumbs.db
 # Node / front (se um dia tiver)
 # -------------------------
 node_modules/
+
+
+# Dados locais do caixa
+dados/
+*.sqlite3
+.venv/

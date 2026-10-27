@@ -1,71 +1,49 @@
-# 🎣 Projeto Pesqueiro — Comandas em Cards
+# Rancho da tia nina — versão com cards
 
-Sistema de controle de consumo para pesqueiros, com comandas em cards pelo **nome da pessoa ou do grupo**, sem depender de números de mesa.
+Esta versão mantém o caixa completo do [Projeto-Pesqueiro de IgorCouto7](https://github.com/IgorCouto7/Projeto-Pesqueiro), com uma alteração visual: as comandas em atendimento aparecem em cards na área central da primeira aba.
 
-## Origem do projeto
+## As três telas
 
-Este é um repositório independente, adaptado do [Projeto-Pesqueiro, da organização C214-L1-202501](https://github.com/C214-L1-202501/Projeto-Pesqueiro).
-Parte da estrutura e do código original foi reutilizada: API em FastAPI, persistência em SQLite com SQLAlchemy, cadastro de clientes e controle de consumo.
-Os créditos dessa base pertencem aos autores e colaboradores do projeto original.
+1. **Comandas:** cards com nome e total no centro. Clique em um card para abrir a janela de consumo, cancelamentos, recebimento e troco. Escolha um produto cadastrado e informe a quantidade; o preço é automático.
+2. **Produtos e estoque:** preservada, incluindo cadastro, preço, unidade, saldo, entrada, perda, ajuste e movimentações.
+3. **Caixa e histórico:** preservada, incluindo recebimentos, fechamento, reabertura, contas pagas e backups.
 
-Nesta versão, a principal mudança é a interface de atendimento em cards. A tela anterior foi preservada para comparação. Este repositório não é um fork do GitHub e pode evoluir separadamente do projeto de origem.
+Os cards usam o nome da pessoa ou do grupo. Clique em **Nova comanda** para abrir um atendimento só pelo nome, sem numerar mesas. Os preços são definidos na aba **Produtos e estoque**, não durante o lançamento.
 
-## O que mudou
+![Prévia com dados fictícios](previa-cards.png)
 
-- Cards no centro da tela com nome, status e valor da comanda.
-- Abertura de atendimento apenas com o nome da pessoa ou grupo, sem exigir CPF.
-- Busca por nome e abas para comandas em atendimento e contas pagas.
-- Abertura da comanda ao clicar no card para lançar consumo e finalizar pagamento.
-- Pessoas com nomes iguais têm atendimentos separados.
-- Produtos com o mesmo nome e preço aparecem agrupados, somando quantidades e valores. Os lançamentos individuais e os preços históricos são preservados.
-- Link para acessar a interface anterior a qualquer momento.
+## Instalar e abrir no Windows
 
-![Prévia da interface com dados fictícios](previa-cards.png)
+Requer Python 3.12 ou superior.
 
-## Como executar
+1. Execute **INSTALAR-CAIXA.cmd** uma vez.
+2. Execute **INICIAR-CAIXA.cmd**.
+3. Abra http://127.0.0.1:8000 ou http://127.0.0.1:8000/cards.
+4. Para comparar com a lista lateral original, abra http://127.0.0.1:8000/classico.
 
-Requisitos: Python 3.10 ou superior e Poetry.
+As duas apresentações usam o mesmo banco do caixa, `dados/caixa.sqlite3`. Nenhum banco de clientes é publicado neste repositório. O banco do protótipo antigo (`pesqueiro.db`) não é convertido automaticamente.
 
-```sh
-git clone https://github.com/IgorCouto7/Projeto-Pesqueiro-Cards.git
-cd Projeto-Pesqueiro-Cards
-poetry install
-poetry run uvicorn App.api.main:app --reload
-```
+Consulte o [guia completo do caixa](GUIA-DO-CAIXA.md).
 
-Abra no navegador:
-
-- **Versão com cards:** http://127.0.0.1:8000/cards
-- **Interface anterior:** http://127.0.0.1:8000/classico
-- **Documentação da API:** http://127.0.0.1:8000/docs
-
-O banco SQLite é criado automaticamente na primeira execução. Este repositório não inclui bancos de clientes ou de testes, ambientes virtuais ou caches Python.
-
-## Como usar
-
-1. Clique em **Nova comanda** e informe um nome, como “João e família”.
-2. Adicione os produtos, as quantidades e os preços na comanda.
-3. Volte aos cards para acompanhar o atendimento e buscar outras pessoas.
-4. Ao receber o pagamento, clique em **Finalizar e pagar**. A conta fica na aba **Pagas**, mantendo os registros de consumo.
-
-## Testes
+## Desenvolvimento e testes
 
 ```sh
-poetry run pytest
+python -m pip install -r requirements-dev.txt
+python -m pytest
+node --test tests/cards.test.cjs
+python iniciar.py
 ```
 
-Para verificar a renderização do agrupamento na interface anterior, com Node.js:
+A suíte ativa está em `tests/`. Os arquivos de `App/models`, `App/schemas` e `App/tests` são referências do protótipo antigo, como na base original. A entrada `App.api.main:app` também aponta para o caixa completo.
 
-```sh
-node --test App/tests/comanda_frontend.test.cjs
-```
+Os testes verificam as operações originais de estoque, preços históricos, pagamentos, cancelamentos e fechamento. Os novos testes também verificam a seleção dos cards e que o HTML das abas de estoque e caixa e a lógica das operações continuam iguais à apresentação clássica.
 
-Na preparação desta versão, passaram 27 testes Python e o teste da interface anterior. O fluxo de cards também foi conferido no navegador com dados fictícios.
+## Origem e versões
 
-## Detalhes das adaptações
+- Base completa: [IgorCouto7/Projeto-Pesqueiro](https://github.com/IgorCouto7/Projeto-Pesqueiro), revisão `36eed34a73a01c0078cb8b580832950c611dbd81`.
+- Origem acadêmica da estrutura: [C214-L1-202501/Projeto-Pesqueiro](https://github.com/C214-L1-202501/Projeto-Pesqueiro). Créditos aos autores e colaboradores das bases reutilizadas.
+- A adaptação anterior, feita sobre o protótipo simplificado, fica preservada na branch `backup/prototipo-cards`.
+- A apresentação clássica completa está em `caixa-classico.html`; a apresentação com cards está em `caixa.html`.
 
-- [Guia das duas versões](VERSAO-CARDS.md)
-- [Regras do agrupamento de produtos](AGRUPAMENTO.md)
-
-Não foi encontrada uma licença no repositório de origem nesta cópia. Este projeto preserva a atribuição aos autores originais e não atribui uma nova licença ao código reutilizado.
+Este é um repositório independente, não um fork do GitHub. Não foi atribuída uma nova licença ao código reutilizado.
 
