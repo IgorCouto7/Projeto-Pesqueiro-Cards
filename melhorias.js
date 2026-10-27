@@ -50,6 +50,7 @@ if (typeof document !== 'undefined') (() => {
         #receiptDialog td:last-child,#receiptDialog th:last-child{text-align:right}.receipt-footer{text-align:center;font-size:12px;color:#6e7c70;margin-top:25px}
         @media print {
             body:has(#receiptDialog[open]) > :not(#receiptDialog){display:none!important}
+            body:has(#receiptDialog[open]) dialog:not(#receiptDialog){display:none!important}
             #receiptDialog[open]{display:block!important;position:static!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;border:0!important;padding:0!important;margin:0!important;box-shadow:none!important;color:#000;background:#fff}
             #receiptDialog::backdrop{display:none!important}#receiptDialog .no-print{display:none!important}
             #receiptDialog tr{break-inside:avoid}#receiptDialog thead{display:table-header-group}
