@@ -13,7 +13,7 @@ packages = [
     { include = "App" },
 ]
 
-include = ["caixa.py", "caixa.html", "caixa-classico.html", "melhorias.js", "iniciar.py"]
+include = ["caixa.py", "caixa.html", "caixa-classico.html", "melhorias.js", "iniciar.py", "runtime_paths.py"]
 
 [tool.poetry.dependencies]
 # Compatível com Python 3.10+ (inclui 3.11 usado no CircleCI)

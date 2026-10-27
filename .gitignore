@@ -11,6 +11,10 @@ __pycache__/
 # Ambientes virtuais
 # -------------------------
 .venv/
+
+# Entregas geradas pela pipeline
+entrega/
+*.spec
 venv/
 env/
 .env

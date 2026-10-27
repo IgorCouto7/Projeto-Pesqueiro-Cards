@@ -1,0 +1,70 @@
+name: Testar e gerar executavel Windows
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Testes, executavel e ZIP
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Instalar dependencias de teste e empacotamento
+        run: python -m pip install -r requirements-build.txt
+      - name: Testar regras do caixa
+        run: python -m pytest -q
+      - name: Testar interface
+        run: node --test tests/cards.test.cjs tests/melhorias.test.cjs
+      - name: Gerar executavel com as telas e recursos
+        run: >-
+          python -m PyInstaller --noconfirm --clean --onefile
+          --name RanchoTiaNina
+          --add-data "caixa.html:."
+          --add-data "caixa-classico.html:."
+          --add-data "melhorias.js:."
+          --hidden-import uvicorn.logging
+          --hidden-import uvicorn.loops.asyncio
+          --hidden-import uvicorn.protocols.http.h11_impl
+          --hidden-import uvicorn.lifespan.on
+          iniciar.py
+      - name: Testar o executavel e a persistencia dos dados
+        run: python scripts/smoke_exe.py dist/RanchoTiaNina.exe
+      - name: Empacotar entrega sem codigo-fonte ou dados de clientes
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path entrega/RanchoTiaNina -Force | Out-Null
+          Copy-Item -LiteralPath dist/RanchoTiaNina.exe -Destination entrega/RanchoTiaNina/
+          Copy-Item -LiteralPath LEIA-ME-WINDOWS.txt -Destination entrega/RanchoTiaNina/
+          Compress-Archive -Path entrega/RanchoTiaNina -DestinationPath entrega/RanchoTiaNina-Windows-x64.zip
+          Get-FileHash entrega/RanchoTiaNina-Windows-x64.zip -Algorithm SHA256 | Format-List | Out-File entrega/SHA256.txt
+      - name: Disponibilizar ZIP para download
+        uses: actions/upload-artifact@v7
+        with:
+          name: RanchoTiaNina-Windows-x64
+          path: |
+            entrega/RanchoTiaNina-Windows-x64.zip
+            entrega/SHA256.txt
+          if-no-files-found: error
+          retention-days: 30

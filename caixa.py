@@ -11,9 +11,10 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field, ConfigDict
+from runtime_paths import resource_root, default_database
 
-ROOT = Path(__file__).resolve().parent
-DB = Path(os.environ.get('PESQUEIRO_DB', str(ROOT / 'dados' / 'caixa.sqlite3')))
+ROOT = resource_root()
+DB = Path(os.environ.get('PESQUEIRO_DB', str(default_database())))
 TOKEN = secrets.token_urlsafe(32)
 app = FastAPI(title='Rancho da tia nina • Caixa local', docs_url=None, redoc_url=None)
 

@@ -1,0 +1,24 @@
+RANCHO DA TIA NINA — WINDOWS 64 BITS
+
+1. Extraia o ZIP para uma pasta.
+2. Abra RanchoTiaNina.exe. Nao precisa instalar Python.
+3. O navegador abre o caixa. Mantenha a janela do programa aberta durante o uso.
+4. Para encerrar, feche a janela do programa ou pressione Ctrl+C nela.
+
+Se o navegador nao abrir, acesse http://127.0.0.1:8000/cards.
+Se houver outro caixa aberto, encerre a outra instancia antes de iniciar.
+
+DADOS E ATUALIZACOES
+Comandas, produtos e backups ficam neste computador, na conta do Windows:
+%LOCALAPPDATA%\RanchoTiaNina\dados
+Cole esse caminho na barra de enderecos do Explorador de Arquivos para abrir.
+
+Para atualizar, encerre o programa e substitua o executavel pelo novo.
+Os dados ficam separados do executavel e sao mantidos. Nao apague a pasta de dados.
+Cada computador/conta do Windows tem seu proprio banco: os dados nao sincronizam.
+Este executavel nao importa automaticamente o banco de uma instalacao Python.
+Para usar um banco anterior, feche o programa e copie caixa.sqlite3 e seus backups
+da instalacao anterior para a pasta de dados acima, preservando uma copia de seguranca.
+
+Esta compilacao nao tem assinatura digital. O Windows pode exibir uma verificacao
+de reputacao ao abri-la. Confira a origem do arquivo e a versao antes de executar.

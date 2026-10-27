@@ -24,6 +24,23 @@ Os cards usam o nome da pessoa ou do grupo. Clique em **Nova comanda** para abri
 
 ## Instalar e abrir no Windows
 
+### Executável sem instalar Python
+
+A pipeline [Testar e gerar executavel Windows](https://github.com/IgorCouto7/Projeto-Pesqueiro-Cards/actions/workflows/windows.yml) roda em cada envio para main, pull request, tag v* e também pelo botão **Run workflow**.
+
+1. Abra **Actions** e escolha uma execução concluída com sucesso.
+2. Em **Artifacts**, baixe **RanchoTiaNina-Windows-x64** (é preciso estar conectado ao GitHub).
+3. Extraia o download e depois o ZIP **RanchoTiaNina-Windows-x64.zip** que está dentro dele.
+4. Envie esse ZIP interno para quem vai testar. A pessoa só precisa extrair e abrir **RanchoTiaNina.exe**.
+
+A entrega contém o executável e instruções; não inclui arquivos Python nem bancos de clientes. A janela do programa precisa ficar aberta durante o uso. O pacote é para Windows 64 bits e não é um instalador assinado.
+
+No executável, o banco e os backups ficam em **%LOCALAPPDATA%\\RanchoTiaNina\\dados**, separados do programa. Atualizações não apagam os dados dessa pasta. Cada conta/computador tem um banco próprio. A instalação por Python continua usando a pasta dados do projeto, sem mudança de caminho. Para transferir dados entre as duas instalações, siga **LEIA-ME-WINDOWS.txt** com ambos os programas fechados.
+
+A pipeline executa os testes Python e JavaScript, empacota com PyInstaller e abre o executável em uma pasta temporária, verificando telas, consumo e persistência após reiniciar, antes de disponibilizar o ZIP. Os downloads ficam disponíveis por 30 dias; não são publicados automaticamente em Releases.
+
+### Instalação a partir do código
+
 Requer Python 3.12 ou superior.
 
 1. Execute **INSTALAR-CAIXA.cmd** uma vez.
